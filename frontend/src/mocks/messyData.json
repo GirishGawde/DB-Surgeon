@@ -1,0 +1,72 @@
+{
+  "tableName": "messy_orders",
+  "rowCount": 450,
+  "issuesDetected": [
+    "1NF Violation: Repeating address & customer data across orders",
+    "2NF Violation: Partial functional dependencies on order items",
+    "PII Exposure: Unmasked Aadhar numbers (UIDAI Compliance violation)",
+    "Data Quality: Inconsistent phone number formats (+91, 0, raw digits)"
+  ],
+  "columns": [
+    "order_id",
+    "customer_name",
+    "customer_phone",
+    "aadhar_number",
+    "shipping_address",
+    "item_name",
+    "item_price",
+    "order_date"
+  ],
+  "sampleRows": [
+    {
+      "order_id": 1001,
+      "customer_name": "Rahul S. Dessai",
+      "customer_phone": "+91-98221-43210",
+      "aadhar_number": "4532-8761-9012",
+      "shipping_address": "House No. 42, Borda, Margao, Goa - 403601",
+      "item_name": "Mechanical Keyboard",
+      "item_price": 4500,
+      "order_date": "2026-10-15"
+    },
+    {
+      "order_id": 1002,
+      "customer_name": "Rahul S. Dessai",
+      "customer_phone": "9822143210",
+      "aadhar_number": "4532-8761-9012",
+      "shipping_address": "House No. 42, Borda, Margao, Goa - 403601",
+      "item_name": "USB-C Thunderbolt Dock",
+      "item_price": 2300,
+      "order_date": "2026-10-18"
+    },
+    {
+      "order_id": 1003,
+      "customer_name": "Ananya Fernandes",
+      "customer_phone": "+91 832 2741122",
+      "aadhar_number": "9081-3421-7654",
+      "shipping_address": "Villa 12, Campal, Panaji, Goa - 403001",
+      "item_name": "Noise Cancelling Headphones",
+      "item_price": 12999,
+      "order_date": "2026-10-20"
+    },
+    {
+      "order_id": 1004,
+      "customer_name": "Vikram Naik",
+      "customer_phone": "0919823456789",
+      "aadhar_number": "6712-4598-2301",
+      "shipping_address": "Plot 8, Housing Board, Mapusa, Goa - 403507",
+      "item_name": "34-inch UltraWide Monitor",
+      "item_price": 28500,
+      "order_date": "2026-10-22"
+    },
+    {
+      "order_id": 1005,
+      "customer_name": "Ananya Fernandes",
+      "customer_phone": "+91 832 2741122",
+      "aadhar_number": "9081-3421-7654",
+      "shipping_address": "Villa 12, Campal, Panaji, Goa - 403001",
+      "item_name": "Ergonomic Lumbar Chair",
+      "item_price": 14500,
+      "order_date": "2026-10-25"
+    }
+  ]
+}

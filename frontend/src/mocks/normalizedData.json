@@ -1,0 +1,81 @@
+{
+  "summary": "Normalized 1 flat denormalized table into 4 Third Normal Form (3NF) relational tables with UIDAI-compliant SHA-256 Aadhar masking and E.164 phone normalization.",
+  "tables": [
+    {
+      "name": "customers",
+      "purpose": "Unique customer entities with redacted PII",
+      "columns": [
+        { "name": "id", "type": "INTEGER", "pk": true },
+        { "name": "full_name", "type": "TEXT", "pk": false },
+        { "name": "phone_e164", "type": "TEXT", "pk": false },
+        { "name": "aadhar_masked", "type": "TEXT", "pk": false }
+      ],
+      "sampleRows": [
+        { "id": 1, "full_name": "Rahul S. Dessai", "phone_e164": "+919822143210", "aadhar_masked": "XXXX-XXXX-9012" },
+        { "id": 2, "full_name": "Ananya Fernandes", "phone_e164": "+918322741122", "aadhar_masked": "XXXX-XXXX-7654" },
+        { "id": 3, "full_name": "Vikram Naik", "phone_e164": "+919823456789", "aadhar_masked": "XXXX-XXXX-2301" }
+      ]
+    },
+    {
+      "name": "addresses",
+      "purpose": "Atomic shipping address components",
+      "columns": [
+        { "name": "id", "type": "INTEGER", "pk": true },
+        { "name": "customer_id", "type": "INTEGER", "pk": false },
+        { "name": "street_address", "type": "TEXT", "pk": false },
+        { "name": "locality", "type": "TEXT", "pk": false },
+        { "name": "city", "type": "TEXT", "pk": false },
+        { "name": "state", "type": "TEXT", "pk": false },
+        { "name": "pincode", "type": "TEXT", "pk": false }
+      ],
+      "sampleRows": [
+        { "id": 1, "customer_id": 1, "street_address": "House No. 42", "locality": "Borda", "city": "Margao", "state": "Goa", "pincode": "403601" },
+        { "id": 2, "customer_id": 2, "street_address": "Villa 12", "locality": "Campal", "city": "Panaji", "state": "Goa", "pincode": "403001" },
+        { "id": 3, "customer_id": 3, "street_address": "Plot 8", "locality": "Housing Board", "city": "Mapusa", "state": "Goa", "pincode": "403507" }
+      ]
+    },
+    {
+      "name": "orders",
+      "purpose": "Header records for customer transactions",
+      "columns": [
+        { "name": "id", "type": "INTEGER", "pk": true },
+        { "name": "customer_id", "type": "INTEGER", "pk": false },
+        { "name": "shipping_address_id", "type": "INTEGER", "pk": false },
+        { "name": "order_date", "type": "TEXT", "pk": false },
+        { "name": "total_amount", "type": "REAL", "pk": false }
+      ],
+      "sampleRows": [
+        { "id": 1001, "customer_id": 1, "shipping_address_id": 1, "order_date": "2026-10-15", "total_amount": 4500.0 },
+        { "id": 1002, "customer_id": 1, "shipping_address_id": 1, "order_date": "2026-10-18", "total_amount": 2300.0 },
+        { "id": 1003, "customer_id": 2, "shipping_address_id": 2, "order_date": "2026-10-20", "total_amount": 12999.0 },
+        { "id": 1004, "customer_id": 3, "shipping_address_id": 3, "order_date": "2026-10-22", "total_amount": 28500.0 },
+        { "id": 1005, "customer_id": 2, "shipping_address_id": 2, "order_date": "2026-10-25", "total_amount": 14500.0 }
+      ]
+    },
+    {
+      "name": "order_items",
+      "purpose": "Atomic item lines per order (eliminating 2NF partial dependency)",
+      "columns": [
+        { "name": "id", "type": "INTEGER", "pk": true },
+        { "name": "order_id", "type": "INTEGER", "pk": false },
+        { "name": "item_name", "type": "TEXT", "pk": false },
+        { "name": "unit_price", "type": "REAL", "pk": false },
+        { "name": "quantity", "type": "INTEGER", "pk": false }
+      ],
+      "sampleRows": [
+        { "id": 1, "order_id": 1001, "item_name": "Mechanical Keyboard", "unit_price": 4500.0, "quantity": 1 },
+        { "id": 2, "order_id": 1002, "item_name": "USB-C Thunderbolt Dock", "unit_price": 2300.0, "quantity": 1 },
+        { "id": 3, "order_id": 1003, "item_name": "Noise Cancelling Headphones", "unit_price": 12999.0, "quantity": 1 },
+        { "id": 4, "order_id": 1004, "item_name": "34-inch UltraWide Monitor", "unit_price": 28500.0, "quantity": 1 },
+        { "id": 5, "order_id": 1005, "item_name": "Ergonomic Lumbar Chair", "unit_price": 14500.0, "quantity": 1 }
+      ]
+    }
+  ],
+  "relations": [
+    { "from": "addresses.customer_id", "to": "customers.id", "type": "1:N" },
+    { "from": "orders.customer_id", "to": "customers.id", "type": "1:N" },
+    { "from": "orders.shipping_address_id", "to": "addresses.id", "type": "N:1" },
+    { "from": "order_items.order_id", "to": "orders.id", "type": "1:N" }
+  ],
+  "proposedSql": "-- 1. Enable Foreign Key Constraints\nPRAGMA foreign_keys = ON;\n\n-- 2. Create Normalized Tables\nCREATE TABLE customers (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    full_name TEXT NOT NULL,\n    phone_e164 TEXT,\n    aadhar_masked TEXT NOT NULL\n);\n\nCREATE TABLE addresses (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    customer_id INTEGER NOT NULL REFERENCES customers(id),\n    street_address TEXT NOT NULL,\n    locality TEXT,\n    city TEXT NOT NULL,\n    state TEXT NOT NULL,\n    pincode TEXT NOT NULL\n);\n\nCREATE TABLE orders (\n    id INTEGER PRIMARY KEY,\n    customer_id INTEGER NOT NULL REFERENCES customers(id),\n    shipping_address_id INTEGER NOT NULL REFERENCES addresses(id),\n    order_date TEXT NOT NULL,\n    total_amount REAL NOT NULL\n);\n\nCREATE TABLE order_items (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    order_id INTEGER NOT NULL REFERENCES orders(id),\n    item_name TEXT NOT NULL,\n    unit_price REAL NOT NULL,\n    quantity INTEGER DEFAULT 1\n);\n\n-- 3. Populate Normalized 3NF Schema & Mask PII\nINSERT INTO customers (full_name, phone_e164, aadhar_masked)\nSELECT DISTINCT \n    customer_name,\n    CASE \n        WHEN customer_phone LIKE '+91%' THEN REPLACE(REPLACE(customer_phone, '-', ''), ' ', '')\n        ELSE '+91' || SUBSTR(REPLACE(REPLACE(customer_phone, '-', ''), ' ', ''), -10)\n    END,\n    'XXXX-XXXX-' || SUBSTR(aadhar_number, -4)\nFROM messy_orders;"
+}

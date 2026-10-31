@@ -1,0 +1,28 @@
+{
+  "cloud": {
+    "active_provider": "gemini",
+    "online": true,
+    "model_name": "Google Gemini 2.5 Flash",
+    "node_type": "Cloud API (Primary Route)",
+    "context_window": "256K tokens",
+    "latency_ms": 118,
+    "temperature": 0.2
+  },
+  "edge": {
+    "active_provider": "ollama",
+    "online": true,
+    "model_name": "gemma4:e4b",
+    "node_type": "Local Edge Node (RTX 2050 / Offline)",
+    "context_window": "8K tokens",
+    "latency_ms": 34,
+    "temperature": 0.1
+  },
+  "offline": {
+    "active_provider": "none",
+    "online": false,
+    "model_name": "Unavailable",
+    "node_type": "Disconnected",
+    "latency_ms": 0,
+    "temperature": 0
+  }
+}
