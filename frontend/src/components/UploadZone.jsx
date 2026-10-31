@@ -2,6 +2,33 @@ import React, { useState, useRef } from 'react';
 import { Database, Image as ImageIcon, UploadCloud, CheckCircle2, FileText, AlertCircle, X } from 'lucide-react';
 import { uploadDatabase, uploadWhiteboardImage } from '../services/api';
 
+function resizeImageBase64(base64Str, maxWidth = 1024, maxHeight = 1024) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      let width = img.width;
+      let height = img.height;
+      if (width > maxWidth || height > maxHeight) {
+        if (width > height) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        } else {
+          width = Math.round((width * maxHeight) / height);
+          height = maxHeight;
+        }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL('image/jpeg', 0.85));
+    };
+    img.onerror = () => resolve(base64Str);
+    img.src = base64Str;
+  });
+}
+
 export default function UploadZone({ onDbLoaded, onWhiteboardLoaded, currentFileName }) {
   const [activeTab, setActiveTab] = useState('db'); // 'db' | 'whiteboard'
   const [isDragging, setIsDragging] = useState(false);
@@ -42,7 +69,6 @@ export default function UploadZone({ onDbLoaded, onWhiteboardLoaded, currentFile
       if (activeTab === 'db') {
         // SQLite Upload
         if (!file.name.match(/\.(db|sqlite|sqlite3)$/i)) {
-          // Allow for demo if user uploads any file, but warn
           console.warn('File does not have a standard .db extension, proceeding for demo.');
         }
         const result = await uploadDatabase(file);
@@ -55,25 +81,38 @@ export default function UploadZone({ onDbLoaded, onWhiteboardLoaded, currentFile
           issues: result.issuesDetected || [],
         });
         if (onDbLoaded) onDbLoaded(result);
+        setUploading(false);
       } else {
-        // Whiteboard Image Upload
+        // Whiteboard Image Upload with automatic downscaling
         const reader = new FileReader();
         reader.onload = async () => {
-          const base64 = reader.result;
-          setPreviewImage(base64);
-          const result = await uploadWhiteboardImage(base64);
-          setUploadedInfo({
-            type: 'whiteboard',
-            name: file.name,
-            extractedEntities: result.extractedEntities || ['customers', 'addresses', 'orders', 'order_items'],
-          });
-          if (onWhiteboardLoaded) onWhiteboardLoaded(result, base64);
+          try {
+            const rawBase64 = reader.result;
+            // Downscale to max 1024px to ensure fast transmission and prevent payload timeouts
+            const compressedBase64 = await resizeImageBase64(rawBase64, 1024, 1024);
+            setPreviewImage(compressedBase64);
+            const result = await uploadWhiteboardImage(compressedBase64);
+            setUploadedInfo({
+              type: 'whiteboard',
+              name: file.name,
+              extractedEntities: result.extractedEntities || [],
+            });
+            if (onWhiteboardLoaded) onWhiteboardLoaded(result, compressedBase64);
+          } catch (err) {
+            console.error('Whiteboard upload failed:', err);
+            setError(err.message || 'Server connection timed out. Please check backend.');
+          } finally {
+            setUploading(false);
+          }
+        };
+        reader.onerror = () => {
+          setError('Failed to read image file.');
+          setUploading(false);
         };
         reader.readAsDataURL(file);
       }
     } catch (err) {
       setError(err.message || 'Failed to process file');
-    } finally {
       setUploading(false);
     }
   };
