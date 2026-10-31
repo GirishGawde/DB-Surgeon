@@ -1,0 +1,16 @@
+DB-Surgeon: Autonomous Data Refactoring Agent
+Problem Statement
+Over time, business databases turn into a massive mess with duplicated information and broken formats, requiring expensive data engineers to manually clean and reorganize the files. You cannot just ask a tool like ChatGPT to fix this because it is only a chat window that cannot securely connect to your private database, physically execute code on your machine, or fix its own errors. Our project bridges this gap by giving an open-weight AI the actual execution power to safely touch, clean, and rebuild the database directly on the local computer.
+Solution
+We built an Autonomous Database Administrator (DBA) agent that physically executes infrastructure changes. Instead of just generating SQL text for a human to copy-paste, the agent connects directly to a messy local SQLite database. It samples the raw data, autonomously designs an optimized relational schema (3rd Normal Form), and writes the migration scripts. Our FastAPI backend then physically executes these SQL commands locally. If the execution hits a database error, the backend intercepts the stack trace and feeds it back to the AI, creating a closed, self-healing loop that runs until the database is perfectly normalized and migrated.
+Key Features
+Closed-loop SQL execution: The FastAPI backend uses Python's sqlite3 driver to run cursor.execute() on the AI-generated code, proving the AI is an active infrastructure executor, not a chatbot.
+Self-healing error routing: If the AI hallucinates a column or makes a syntax error, the backend catches the exact stack trace and autonomously sends it back to the agent to fix its own code without human intervention.
+High-availability hybrid fallback: The routing engine defaults to the Gemini API for Gemma 4's massive reasoning power, but automatically fails over to the local Ollama instance on the gaming laptops if the Wi-Fi drops or API tokens exhaust.
+Autonomous data normalization: The agent can take a single massive, messy table and automatically split it into relational tables while generating the correct Foreign Keys and migrating the historical data.
+Visual dry-run UI: A React/Vite dashboard where users upload their messy .db file and view a visual node graph of the AI's proposed database architecture. The human clicks "Approve," and the agent handles the physical execution.
+"Time-Travel" Rollback System (Database Versioning): Instantly clones the database before executing any SQL mutation, allowing the user to click "Undo" in the React UI to hot-swap the backup file if the AI structures the database incorrectly.
+Autonomous PII Masking Engine (Cybersecurity): Automatically scans raw data rows for Personally Identifiable Information and writes SQL to cryptographically hash or redact sensitive data before normalizing tables.
+Intelligent Contextual Data Synthesis: Reads column names and autonomously generates hundreds of rows of highly specific, localized dummy data to populate the new architecture for instant testing.
+Visual Whiteboard Ingestion (Multimodal Architecture): Allows users to upload a photo of a hand-drawn Entity-Relationship (ER) diagram; the agent visually extracts the tables and relationships, writes the entire SQL schema, and executes it.
+
