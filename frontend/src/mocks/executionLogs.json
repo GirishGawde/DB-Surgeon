@@ -1,0 +1,40 @@
+{
+  "executionId": "exec-7f49a2",
+  "status": "success",
+  "provider": "gemini",
+  "aiModel": "Google Gemini 2.5 Flash (Cloud)",
+  "totalDurationMs": 482,
+  "rowsAffected": 450,
+  "tablesCreated": 4,
+  "attempts": [
+    {
+      "attempt": 1,
+      "status": "failed",
+      "action": "cursor.executescript(generated_ddl)",
+      "error": "sqlite3.OperationalError: near \"FOREIGN\": syntax error (line 14)",
+      "diagnostic": "SQLite syntax error: Inline FOREIGN KEY clause without REFERENCES table qualifier.",
+      "timestamp": "12:42:01.120"
+    },
+    {
+      "attempt": 2,
+      "status": "self_healing",
+      "action": "router.heal(error_trace, original_sql)",
+      "aiReflection": "Detected SQLite dialect mismatch. Fixing table constraint syntax to PRAGMA foreign_keys = ON with standard REFERENCES clauses.",
+      "timestamp": "12:42:01.310"
+    },
+    {
+      "attempt": 3,
+      "status": "success",
+      "action": "cursor.executescript(repaired_ddl)",
+      "result": "Transaction committed successfully. Integrity check: OK.",
+      "timestamp": "12:42:01.590"
+    }
+  ],
+  "validation": {
+    "foreignKeysValid": true,
+    "piiExposedCount": 0,
+    "unmaskedAadharFound": 0,
+    "orphanedRecords": 0,
+    "normalFormAchieved": "3NF"
+  }
+}
