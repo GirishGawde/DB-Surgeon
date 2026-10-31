@@ -202,8 +202,17 @@ def _call_ollama(prompt: str, image_b64: Optional[str] = None) -> str:
         raise RuntimeError(f"Ollama returned HTTP {resp.status_code}: {resp.text}")
 
     result_json = resp.json()
-    response_text = result_json.get("response", "")
+    response_text = (result_json.get("response") or "").strip()
+    
+    # If model is in thinking mode and response is empty, extract generated output from thinking
+    if not response_text and result_json.get("thinking"):
+        response_text = (result_json.get("thinking") or "").strip()
+
+    if not response_text and isinstance(result_json.get("message"), dict):
+        response_text = (result_json["message"].get("content") or "").strip()
+
     if not response_text:
+        logger.warning(f"[AI Router] Ollama returned empty response. Available keys: {list(result_json.keys())}")
         raise RuntimeError("Ollama returned an empty response.")
 
     return response_text
