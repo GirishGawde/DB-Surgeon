@@ -24,13 +24,13 @@ def clean_sql_output(raw_text: str) -> str:
     text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL)
     text = re.sub(r"<thought>.*?</thought>", "", text, flags=re.DOTALL)
 
-    # 2. Extract content from markdown code fences if present (```sql ... ``` or ``` ...)
-    fence_match = re.search(r"```(?:sql)?\s*([\s\S]*?)\s*```", text, flags=re.IGNORECASE)
+    # 2. Extract content from markdown code fences if present (```sql / ```sqlite ... ``` or ``` ...)
+    fence_match = re.search(r"```(?:sql|sqlite)?\s*([\s\S]*?)\s*```", text, flags=re.IGNORECASE)
     if fence_match:
         text = fence_match.group(1).strip()
     else:
         # If open fence without closing fence
-        text = re.sub(r"^```(?:sql)?\s*", "", text, flags=re.IGNORECASE)
+        text = re.sub(r"^```(?:sql|sqlite)?\s*", "", text, flags=re.IGNORECASE)
         text = re.sub(r"```\s*$", "", text)
 
     # 3. Strip common introductory or conclusion phrases
@@ -105,6 +105,7 @@ YOUR TASK:
 4. Generate data migration queries (INSERT OR IGNORE INTO ... SELECT ...) to migrate existing data into the normalized relational tables.
 
 STRICT REQUIREMENTS:
+- Think briefly and concisely in less than 35 words.
 - Output ONLY valid, executable SQLite SQL statements separated by semicolons.
 - Do NOT wrap output in markdown code blocks (no ```sql).
 - Do NOT include any explanations, markdown headers, or preamble.
@@ -128,6 +129,7 @@ YOUR TASK:
 3. Ensure the SQL is completely safe, idempotent, and updates the existing tables directly.
 
 STRICT REQUIREMENTS:
+- Think briefly and concisely in less than 35 words.
 - Output ONLY valid, executable SQLite SQL statements.
 - Do NOT include markdown code blocks (no ```sql).
 - Do NOT include conversational text or explanations.
@@ -174,6 +176,7 @@ YOUR TASK:
    - PRIMARY KEY and FOREIGN KEY (col) REFERENCES parent(col) constraints.
 
 STRICT REQUIREMENTS:
+- Think briefly and concisely in less than 35 words.
 - Output ONLY executable SQLite SQL statements separated by semicolons.
 - Do NOT include markdown code fences (no ```sql).
 - Do NOT include conversational text or explanations.
@@ -224,6 +227,7 @@ YOUR TASK:
 Translate this natural language command into safe, valid, executable SQLite SQL statements.
 
 STRICT REQUIREMENTS:
+- Think briefly and concisely in less than 35 words.
 - Output ONLY valid SQLite SQL statements.
 - Do NOT wrap in markdown code blocks (no ```sql).
 - Do NOT include explanations or preamble.

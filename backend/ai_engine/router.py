@@ -173,7 +173,7 @@ def _call_ollama(prompt: str, image_b64: Optional[str] = None) -> str:
     model_name = _resolve_ollama_model(base_url)
 
     timeout_seconds = int(os.getenv("OLLAMA_TIMEOUT", "300"))
-    num_predict = int(os.getenv("OLLAMA_NUM_PREDICT", "1024"))
+    num_predict = int(os.getenv("OLLAMA_NUM_PREDICT", "2048"))
 
     request_body: Dict[str, Any] = {
         "model": model_name,
