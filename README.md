@@ -191,7 +191,7 @@ npm install
 Create or verify `backend/.env`:
 ```env
 PORT=3000
-MONGO_URL="mongodb+srv://krishnrajshivolkar:krishnrajshivolkarplannora211205@backend.6ujsigm.mongodb.net/HackOct?appName=Backend"
+MONGO_URL="mongodb+srv://<username>:<password>@cluster.mongodb.net/HackOct?appName=Backend"
 GEMINI_API_KEY="your-gemini-api-key-here"
 ```
 
@@ -216,7 +216,7 @@ VITE_API_BASE_URL=http://localhost:3000
 VITE_USE_MOCKS=false
 VITE_GEMINI_API_KEY="your-gemini-api-key-here"
 GEMINI_API_KEY="your-gemini-api-key-here"
-MONGO_URL="mongodb+srv://krishnrajshivolkar:krishnrajshivolkarplannora211205@backend.6ujsigm.mongodb.net/HackOct?appName=Backend"
+MONGO_URL="mongodb+srv://<username>:<password>@cluster.mongodb.net/HackOct?appName=Backend"
 ```
 
 Start the Vite development server:

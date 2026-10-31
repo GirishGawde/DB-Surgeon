@@ -17,6 +17,22 @@ build/
 !.env.example
 !**/.env.example
 
+# Keys, Secrets & Certificates
+*.pem
+*.key
+*.cert
+*.crt
+id_rsa*
+*.pfx
+*.p12
+credentials.json
+service-account*.json
+client_secret*.json
+secrets/
+keys/
+**/secrets/
+**/keys/
+
 # Logs
 logs/
 *.log

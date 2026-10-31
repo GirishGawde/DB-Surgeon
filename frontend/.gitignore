@@ -11,9 +11,26 @@ node_modules
 dist
 dist-ssr
 *.local
+
+# Environment files and secrets (NEVER COMMIT)
 .env
 .env.*
+.env.local
 !.env.example
+
+# Keys, Secrets & Certificates
+*.pem
+*.key
+*.cert
+*.crt
+id_rsa*
+*.pfx
+*.p12
+credentials.json
+service-account*.json
+client_secret*.json
+secrets/
+keys/
 
 # Editor directories and files
 .vscode/*

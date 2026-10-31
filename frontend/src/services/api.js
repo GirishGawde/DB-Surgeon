@@ -24,7 +24,7 @@ const delay = (ms = 400) => new Promise((resolve) => setTimeout(resolve, ms));
 const GEMINI_API_KEY =
   import.meta.env.VITE_GEMINI_API_KEY ||
   import.meta.env.GEMINI_API_KEY ||
-  'AIzaSyCmnj9vLF2aFZN9CxH-bxQ9GrIoyBhuS74';
+  '';
 
 /**
  * Direct Google Gemini API caller for dynamic queries on any prompt

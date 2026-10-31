@@ -10,7 +10,10 @@ dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 export default async function ConnectDB() {
     try {
-        const mongoUrl = process.env.MONGO_URL || "mongodb+srv://krishnrajshivolkar:krishnrajshivolkarplannora211205@backend.6ujsigm.mongodb.net/HackOct?appName=Backend";
+        const mongoUrl = process.env.MONGO_URL;
+        if (!mongoUrl) {
+            throw new Error("MONGO_URL is missing from environment variables (.env)");
+        }
         await mongoose.connect(mongoUrl);
         console.log("Connected to MongoDB successfully");
     } catch (error) {
