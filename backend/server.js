@@ -3,7 +3,7 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const { spawn } = require("child_process");
 const path = require("path");
-const app = require("../backend/src/app");
+const app = require("./src/app");
 
 const PORT = process.env.PORT || 3000;
 

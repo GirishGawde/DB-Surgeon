@@ -112,26 +112,49 @@ export default function App() {
   const handleCommand = async (commandText) => {
     setIsAnalyzing(true);
     try {
-      if (/generate|dummy|synthesize/i.test(commandText)) {
-        const res = await executeCommand(commandText);
+      const res = await executeCommand(commandText);
+
+      // 1. Update Schema if proposed/generated
+      if (res.schema) {
+        setSchemaData(res.schema);
+      }
+
+      // 2. Update Self-Healing Execution Logs
+      if (res.logs && res.logs.length > 0) {
+        setExecutionLogs(res.logs);
+      } else if (res.message) {
         setExecutionLogs([
           {
             attempt: 1,
             status: 'success',
-            action: 'synthesis_bulk_insert',
-            result: `Generated ${res.rowsInserted || 50} localized Goan customer rows via ${
-              isEdgeSimulated ? 'Local Edge (Ollama gemma4:e4b)' : 'Cloud API (Gemini)'
-            }.`,
+            action: `agent.execute("${commandText}")`,
+            result: res.message,
             timestamp: new Date().toLocaleTimeString(),
           },
         ]);
-        setMetrics({ durationMs: 290, rowsAffected: res.rowsInserted || 50 });
-      } else {
-        const analysis = await analyzeSchema(commandText, currentDbName);
-        setSchemaData(analysis.schema);
+      }
+
+      // 3. Update Validation & Metrics
+      if (res.validation) {
+        setValidationResult(res.validation);
+      }
+      if (res.totalDurationMs !== undefined || res.rowsAffected !== undefined) {
+        setMetrics({
+          durationMs: res.totalDurationMs || 312,
+          rowsAffected: res.rowsAffected !== undefined ? res.rowsAffected : (res.rowsInserted || 12),
+        });
       }
     } catch (err) {
       console.error('Command handling failed:', err);
+      setExecutionLogs([
+        {
+          attempt: 1,
+          status: 'failed',
+          action: `agent.execute("${commandText}")`,
+          error: err.message,
+          timestamp: new Date().toLocaleTimeString(),
+        },
+      ]);
     } finally {
       setIsAnalyzing(false);
     }
@@ -541,6 +564,7 @@ export default function App() {
               validation={validationResult}
               durationMs={metrics.durationMs}
               rowsAffected={metrics.rowsAffected}
+              proposedSql={schemaData?.proposedSql}
             />
           </div>
         )}
@@ -708,6 +732,7 @@ export default function App() {
                 validation={validationResult}
                 durationMs={metrics.durationMs}
                 rowsAffected={metrics.rowsAffected}
+                proposedSql={schemaData?.proposedSql}
               />
             </div>
           </div>

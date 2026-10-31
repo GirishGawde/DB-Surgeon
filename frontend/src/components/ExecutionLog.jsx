@@ -7,6 +7,7 @@ export default function ExecutionLog({
   validation = null,
   durationMs = null,
   rowsAffected = null,
+  proposedSql = null,
 }) {
   const terminalEndRef = useRef(null);
 
@@ -230,6 +231,34 @@ export default function ExecutionLog({
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent-cyan)' }}>
             <span className="pulse-indicator">●</span>
             <span>Running cursor.execute() transaction in isolated sandbox...</span>
+          </div>
+        )}
+
+        {proposedSql && (
+          <div
+            style={{
+              background: 'rgba(0, 0, 0, 0.45)',
+              border: '1px solid rgba(6, 182, 212, 0.25)',
+              borderRadius: 'var(--radius-sm)',
+              padding: '10px 12px',
+              marginTop: '8px',
+            }}
+          >
+            <div style={{ fontSize: '11px', color: 'var(--accent-cyan)', fontWeight: 600, marginBottom: '6px' }}>
+              &gt; Generated Query / Schema DDL:
+            </div>
+            <pre
+              className="mono"
+              style={{
+                margin: 0,
+                fontSize: '11px',
+                color: '#93c5fd',
+                whiteSpace: 'pre-wrap',
+                lineHeight: 1.5,
+              }}
+            >
+              {proposedSql}
+            </pre>
           </div>
         )}
 
